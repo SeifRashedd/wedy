@@ -8,23 +8,25 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { TemplatePreviewModal } from "@/components/templates/TemplatePreviewModal";
 import { useState } from "react";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { MessageKey } from "@/i18n/messages";
 
 export function TemplatesPreview() {
   const templates = getActiveTemplates();
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const { t, locale } = useLanguage();
 
   return (
     <section className="py-24 px-4 sm:px-6 bg-cream/50">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-rose-dust text-sm tracking-[0.3em] uppercase mb-3">Our Collection</p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-wedding-brown mb-4">
-            Choose Your Perfect Design
-          </h2>
-          <p className="text-wedding-muted max-w-lg mx-auto">
-            Each template is crafted with attention to detail, designed to make your special day
-            unforgettable.
+          <p className="text-rose-dust text-sm tracking-[0.3em] uppercase mb-3">
+            {t("templates.kicker")}
           </p>
+          <h2 className="font-serif text-3xl sm:text-4xl text-wedding-brown mb-4">
+            {t("templates.heading")}
+          </h2>
+          <p className="text-wedding-muted max-w-lg mx-auto">{t("templates.sub")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -36,6 +38,8 @@ export function TemplatesPreview() {
                 : config.id === "template-02"
                   ? "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=600&q=80"
                   : "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80";
+            const nameKey = `templates.${config.id}.name` as MessageKey;
+            const descKey = `templates.${config.id}.desc` as MessageKey;
 
             return (
               <Card key={config.id} hover className="overflow-hidden group">
@@ -43,20 +47,20 @@ export function TemplatesPreview() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={previewImage}
-                    alt={config.name}
+                    alt={t(nameKey)}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-wedding-brown/70 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 className="font-serif text-xl">{config.name}</h3>
-                    <p className="text-sm opacity-80 mt-1">{formatCurrency(config.price)}</p>
+                    <h3 className="font-serif text-xl">{t(nameKey)}</h3>
+                    <p className="text-sm opacity-80 mt-1">
+                      {formatCurrency(config.price, locale)}
+                    </p>
                   </div>
                 </div>
 
                 <div className="p-6">
-                  <p className="text-wedding-muted text-sm mb-4 line-clamp-2">
-                    {config.description}
-                  </p>
+                  <p className="text-wedding-muted text-sm mb-4 line-clamp-2">{t(descKey)}</p>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -65,12 +69,12 @@ export function TemplatesPreview() {
                       onClick={() => setPreviewId(config.id)}
                     >
                       <Eye className="w-4 h-4" />
-                      Preview
+                      {t("templates.preview")}
                     </Button>
                     <Link href={`/create/${config.id}`} className="flex-1">
                       <Button size="sm" className="w-full">
                         <Heart className="w-4 h-4" />
-                        Choose
+                        {t("templates.choose")}
                       </Button>
                     </Link>
                   </div>

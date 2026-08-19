@@ -16,8 +16,8 @@ export function generateSlug(groomName: string, brideName: string): string {
   return `${normalize(groomName)}-${normalize(brideName)}`;
 }
 
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-EG", {
+export function formatCurrency(amount: number, locale: "ar" | "en" = "en"): string {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-EG", {
     style: "currency",
     currency: "EGP",
     minimumFractionDigits: 0,

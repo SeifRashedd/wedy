@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTemplate } from "@/templates/registry";
 import { InvitationForm } from "@/components/create/InvitationForm";
-import { formatCurrency } from "@/lib/utils";
+import { CreatePageHeader } from "@/components/create/CreatePageHeader";
 
 interface CreatePageProps {
   params: Promise<{ templateId: string }>;
@@ -26,13 +26,11 @@ export default async function CreatePage({ params }: CreatePageProps) {
   return (
     <div className="py-12 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <p className="text-rose-dust text-sm tracking-[0.2em] uppercase mb-2">Create Invitation</p>
-          <h1 className="font-serif text-3xl text-wedding-brown">{entry.config.name}</h1>
-          <p className="text-wedding-muted mt-2">
-            {entry.config.description} · {formatCurrency(entry.config.price)}
-          </p>
-        </div>
+        <CreatePageHeader
+          templateId={templateId}
+          description={entry.config.description}
+          price={entry.config.price}
+        />
 
         <InvitationForm templateId={templateId} />
       </div>

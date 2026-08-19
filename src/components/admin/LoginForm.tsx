@@ -8,9 +8,11 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { AlertCircle } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 export function LoginForm() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,7 +29,7 @@ export function LoginForm() {
         router.push("/admin");
         router.refresh();
       } else {
-        setError("Demo mode: use admin@wedy.eg / admin123");
+        setError(t("login.demoError"));
       }
       setLoading(false);
       return;
@@ -54,16 +56,14 @@ export function LoginForm() {
 
   return (
     <Card className="p-8 max-w-md w-full">
-      <h1 className="font-serif text-2xl text-wedding-brown mb-2 text-center">Admin Login</h1>
-      <p className="text-wedding-muted text-sm text-center mb-6">
-        Sign in to manage orders and invitations
-      </p>
+      <h1 className="font-serif text-2xl text-wedding-brown mb-2 text-center">{t("login.title")}</h1>
+      <p className="text-wedding-muted text-sm text-center mb-6">{t("login.sub")}</p>
 
       {!isSupabaseConfigured() && (
         <div className="flex items-start gap-2 bg-champagne/10 rounded-xl p-3 mb-6 text-sm text-wedding-brown">
           <AlertCircle className="w-4 h-4 text-champagne shrink-0 mt-0.5" />
           <span>
-            Demo credentials: <strong>admin@wedy.eg</strong> / <strong>admin123</strong>
+            {t("login.demo")} <strong>admin@wedy.eg</strong> / <strong>admin123</strong>
           </span>
         </div>
       )}
@@ -71,7 +71,7 @@ export function LoginForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           id="email"
-          label="Email"
+          label={t("login.email")}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -80,7 +80,7 @@ export function LoginForm() {
         />
         <Input
           id="password"
-          label="Password"
+          label={t("login.password")}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -90,7 +90,7 @@ export function LoginForm() {
         {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? t("login.signing") : t("login.submit")}
         </Button>
       </form>
     </Card>

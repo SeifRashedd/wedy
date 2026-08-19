@@ -10,13 +10,35 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Button } from "@/components/ui/Button";
 import { LivePreview } from "./LivePreview";
 import { isValidImageFile } from "@/lib/utils";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import { messages, type MessageKey } from "@/i18n/messages";
 
 interface InvitationFormProps {
   templateId: string;
 }
 
+function fieldLabel(
+  name: string,
+  fallback: string,
+  t: (key: MessageKey) => string
+) {
+  const key = `fields.${name}` as MessageKey;
+  return key in messages.en ? t(key) : fallback;
+}
+
+function stepText(
+  title: string,
+  kind: "title" | "desc",
+  fallback: string,
+  t: (key: MessageKey) => string
+) {
+  const key = `steps.${title}.${kind}` as MessageKey;
+  return key in messages.en ? t(key) : fallback;
+}
+
 export function InvitationForm({ templateId }: InvitationFormProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const entry = getTemplate(templateId);
   const [step, setStep] = useState(1);
   const [showMobilePreview, setShowMobilePreview] = useState(false);
@@ -51,7 +73,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
     if (!isValidImageFile(file)) {
       setErrors((prev) => ({
         ...prev,
-        [name]: "Please upload a JPEG, PNG, or WebP image under 5MB",
+        [name]: t("create.imageError"),
       }));
       return;
     }
@@ -75,7 +97,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
       if (field.required) {
         const value = data[field.name as keyof InvitationData];
         if (!value || (Array.isArray(value) && value.length === 0)) {
-          stepErrors[field.name] = `${field.label} is required`;
+          stepErrors[field.name] = `${fieldLabel(field.name, field.label, t)} ${t("create.required")}`;
         }
       }
     });
@@ -106,7 +128,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
           <Textarea
             key={field.name}
             id={field.name}
-            label={field.label}
+            label={fieldLabel(field.name, field.label, t)}
             required={field.required}
             value={(value as string) ?? ""}
             onChange={(e) => updateField(field.name, e.target.value)}
@@ -124,15 +146,17 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
               onChange={(e) => updateField(field.name, e.target.checked)}
               className="w-5 h-5 rounded border-rose-dust/30 text-rose-dust focus:ring-rose-dust/20"
             />
-            <span className="text-sm text-wedding-brown">{field.label}</span>
+            <span className="text-sm text-wedding-brown">
+              {fieldLabel(field.name, field.label, t)}
+            </span>
           </label>
         );
       case "image":
         return (
           <div key={field.name} className="space-y-2">
             <label className="block text-sm font-medium text-wedding-brown">
-              {field.label}
-              {field.required && <span className="text-rose-dust ml-1">*</span>}
+              {fieldLabel(field.name, field.label, t)}
+              {field.required && <span className="text-rose-dust ms-1">*</span>}
             </label>
             {value && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -159,7 +183,9 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
       case "gallery":
         return (
           <div key={field.name} className="space-y-2">
-            <label className="block text-sm font-medium text-wedding-brown">{field.label}</label>
+            <label className="block text-sm font-medium text-wedding-brown">
+              {fieldLabel(field.name, field.label, t)}
+            </label>
             {data.gallery && data.gallery.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
                 {data.gallery.map((src, i) => (
@@ -182,7 +208,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
           <Input
             key={field.name}
             id={field.name}
-            label={field.label}
+            label={fieldLabel(field.name, field.label, t)}
             type={field.type}
             required={field.required}
             value={(value as string) ?? ""}
@@ -213,7 +239,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
                     : "bg-white text-wedding-muted border border-rose-dust/10"
               }`}
             >
-              {s.title}
+              {stepText(s.title, "title", s.title, t)}
             </button>
           ))}
         </div>
@@ -221,24 +247,30 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-rose-dust/10">
           {currentStepInfo && (
             <div className="mb-6">
-              <h2 className="font-serif text-2xl text-wedding-brown">{currentStepInfo.title}</h2>
-              <p className="text-wedding-muted text-sm mt-1">{currentStepInfo.description}</p>
+              <h2 className="font-serif text-2xl text-wedding-brown">
+                {stepText(currentStepInfo.title, "title", currentStepInfo.title, t)}
+              </h2>
+              <p className="text-wedding-muted text-sm mt-1">
+                {stepText(
+                  currentStepInfo.title,
+                  "desc",
+                  currentStepInfo.description,
+                  t
+                )}
+              </p>
             </div>
           )}
 
           {step === maxStep ? (
             <div className="space-y-4">
-              <p className="text-wedding-muted">
-                Review your invitation in the preview panel. When you&apos;re happy, proceed to
-                checkout.
-              </p>
+              <p className="text-wedding-muted">{t("create.review")}</p>
               <Button
                 variant="outline"
                 className="lg:hidden w-full"
                 onClick={() => setShowMobilePreview(true)}
               >
                 <Eye className="w-4 h-4" />
-                View Preview
+                {t("create.viewPreview")}
               </Button>
             </div>
           ) : (
@@ -251,17 +283,17 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
               onClick={() => setStep(Math.max(1, step - 1))}
               disabled={step === 1}
             >
-              <ChevronLeft className="w-4 h-4" />
-              Back
+              <ChevronLeft className="w-4 h-4 rtl:rotate-180" />
+              {t("create.back")}
             </Button>
 
             {step < maxStep ? (
               <Button onClick={handleNext}>
-                Next
-                <ChevronRight className="w-4 h-4" />
+                {t("create.next")}
+                <ChevronRight className="w-4 h-4 rtl:rotate-180" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit}>Proceed to Checkout</Button>
+              <Button onClick={handleSubmit}>{t("create.checkout")}</Button>
             )}
           </div>
         </div>
@@ -272,7 +304,7 @@ export function InvitationForm({ templateId }: InvitationFormProps) {
           onClick={() => setShowMobilePreview(!showMobilePreview)}
         >
           <Smartphone className="w-4 h-4" />
-          {showMobilePreview ? "Hide Preview" : "Show Live Preview"}
+          {showMobilePreview ? t("create.hidePreview") : t("create.showPreview")}
         </Button>
 
         {showMobilePreview && (

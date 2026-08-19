@@ -36,6 +36,19 @@ body {
   font-family: var(--font-playfair), Georgia, serif;
 }
 
+html[lang="ar"] body {
+  font-family: var(--font-cairo), system-ui, sans-serif;
+}
+
+html[lang="ar"] .font-serif {
+  font-family: var(--font-amiri), serif;
+}
+
+html[lang="ar"] .uppercase {
+  text-transform: none;
+  letter-spacing: 0.04em;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;

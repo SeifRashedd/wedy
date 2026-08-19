@@ -4,6 +4,8 @@ import { X } from "lucide-react";
 import { getTemplate } from "@/templates/registry";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import type { MessageKey } from "@/i18n/messages";
 
 interface TemplatePreviewModalProps {
   templateId: string;
@@ -11,10 +13,12 @@ interface TemplatePreviewModalProps {
 }
 
 export function TemplatePreviewModal({ templateId, onClose }: TemplatePreviewModalProps) {
+  const { t } = useLanguage();
   const entry = getTemplate(templateId);
   if (!entry) return null;
 
   const { Component, config, sampleData } = entry;
+  const nameKey = `templates.${config.id}.name` as MessageKey;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -22,8 +26,8 @@ export function TemplatePreviewModal({ templateId, onClose }: TemplatePreviewMod
       <div className="relative w-full max-w-lg max-h-[90vh] mx-4 bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-rose-dust/10 bg-ivory">
           <div>
-            <h3 className="font-serif text-lg text-wedding-brown">{config.name}</h3>
-            <p className="text-xs text-wedding-muted">Preview with sample data</p>
+            <h3 className="font-serif text-lg text-wedding-brown">{t(nameKey)}</h3>
+            <p className="text-xs text-wedding-muted">{t("templates.previewSample")}</p>
           </div>
           <button
             onClick={onClose}
@@ -39,10 +43,10 @@ export function TemplatePreviewModal({ templateId, onClose }: TemplatePreviewMod
 
         <div className="p-4 border-t border-rose-dust/10 bg-ivory flex gap-3">
           <Button variant="outline" className="flex-1" onClick={onClose}>
-            Close
+            {t("templates.close")}
           </Button>
           <Link href={`/create/${config.id}`} className="flex-1">
-            <Button className="w-full">Choose This Template</Button>
+            <Button className="w-full">{t("templates.chooseThis")}</Button>
           </Link>
         </div>
       </div>
