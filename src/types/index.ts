@@ -20,7 +20,7 @@ export interface TemplateField {
   label: string;
   type: FieldType;
   required?: boolean;
-  placeholder?: string;
+  placeholder?: string; 
   step?: number;
 }
 
