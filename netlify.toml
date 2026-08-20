@@ -1,5 +1,6 @@
 [build]
   command = "npm run build"
+  publish = ".next"
 
 [build.environment]
   # NEXT_PUBLIC_* vars are intentionally embedded in the client bundle by Next.js
